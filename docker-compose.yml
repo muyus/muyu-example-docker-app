@@ -1,0 +1,52 @@
+version: "3"
+services:
+  web:
+    image: muyus/muyu-example-docker-java
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: "1"
+          memory: 256M
+    ports:
+      - "9000:9000"
+    volumes:
+      - /data/java:/data
+    networks:
+      - webnet
+  mongo:
+    image: mongo:3.6
+    deploy:
+      resources:
+        limits:
+          memory: 500M
+    ports:
+      - "3717:27017"
+    volumes:
+      - /data/mongo:/data/db
+    networks:
+      - webnet
+  redis:
+    image: redis:4.0
+    deploy:
+      resources:
+        limits:
+          memory: 100M
+    ports:
+      - "7000:6379"
+    volumes:
+      - /data/redis:/data
+    networks:
+      - webnet
+  visualizer:
+    image: dockersamples/visualizer:stable
+    ports:
+      - "9001:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - webnet
+networks:
+  webnet:
